@@ -4,7 +4,7 @@
 DB_NAME="myapp"
 DB_USER="appuser"
 DB_PASSWORD="dbuser123"
-DB_PORT="5001"
+DB_PORT="5000"
 
 echo "Starting MongoDB setup..."
 
@@ -35,12 +35,6 @@ if mongosh --port ${DB_PORT} --eval "db.adminCommand('ping')" > /dev/null 2>&1; 
         echo "mongosh mongodb://${DB_USER}:${DB_PASSWORD}@localhost:${DB_PORT}/${DB_NAME}?authSource=admin"
     fi
     
-    # Run seed script against existing instance
-    if [ -f "seed.js" ]; then
-        echo "Running seed against existing MongoDB..."
-        mongosh mongodb://${DB_USER}:${DB_PASSWORD}@localhost:${DB_PORT}/${DB_NAME}?authSource=admin seed.js || true
-    fi
-
     echo ""
     echo "Script stopped - MongoDB server already running."
     exit 0
@@ -128,14 +122,6 @@ cat > db_visualizer/mongodb.env << EOF
 export MONGODB_URL="mongodb://${DB_USER}:${DB_PASSWORD}@localhost:${DB_PORT}/?authSource=admin"
 export MONGODB_DB="${DB_NAME}"
 EOF
-
-# Seed database after DB and users are ready
-if [ -f "seed.js" ]; then
-    echo "Seeding database with initial data and indexes..."
-    mongosh mongodb://${DB_USER}:${DB_PASSWORD}@localhost:${DB_PORT}/${DB_NAME}?authSource=admin seed.js || {
-        echo "Warning: seed.js encountered an error."
-    }
-fi
 
 echo "MongoDB setup complete!"
 echo "Database: ${DB_NAME}"
